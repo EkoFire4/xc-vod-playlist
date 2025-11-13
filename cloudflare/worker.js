@@ -221,8 +221,8 @@ async function getEpisodeUrl(seriesItem, seasonNum, episodeNum, episodesData, ma
 
 async function fetchAndParseLivePlaylist(includeAdult = false) {
   const playlistUrl = includeAdult
-    ? 'https://raw.githubusercontent.com/Drewski2423/DrewLive/refs/heads/main/MergedPlaylist.m3u8'
-    : 'https://raw.githubusercontent.com/Drewski2423/DrewLive/refs/heads/main/MergedCleanPlaylist.m3u8';
+    ? 'http://drewlive24.duckdns.org:8081/DrewLive/MergedPlaylist.m3u8'
+    : 'http://drewlive24.duckdns.org:8081/DrewLive/MergedCleanPlaylist.m3u8';
 
   try {
     const res = await httpGet(playlistUrl);
@@ -847,7 +847,7 @@ export default {
 			} else if (pathname === "/player_api.php") {
 				response = await handlePlayerAPI(request);
 			} else if (pathname === "/xmltv.php") {
-				return Response.redirect("https://github.com/Drewski2423/DrewLive/raw/refs/heads/main/DrewLive.xml.gz", 302);
+				return Response.redirect("http://drewlive24.duckdns.org:8081/DrewLive/MergedCleanPlaylist.m3u8", 302);
 			} else if (pathname.startsWith("/movie/")) {
 				const u = pathname.split('/')[2];
 				response = await handleMovie(pathname, u);
@@ -878,4 +878,5 @@ export default {
     }
   },
 };
+
 
