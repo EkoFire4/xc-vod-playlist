@@ -9,10 +9,20 @@ const EPISODES_JSON = `${GITHUB_BASE}/episodes.json`;
 const MOVIE_CATS_JSON = `${GITHUB_BASE}/movie_categories.json`;
 const SERIES_CATS_JSON = `${GITHUB_BASE}/series_categories.json`;
 
+const FILE_BASE = "https://a.111477.xyz";
+
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
 /* ------------------ helpers ------------------ */
 const log = (...a) => console.log(new Date().toISOString(), ...a);
+
+function normalizeFileUrl(u) {
+  if (!u) return null;
+  const s = String(u).trim();
+  if (/^https?:\/\//i.test(s)) return s;
+  const base = FILE_BASE.endsWith("/") ? FILE_BASE : `${FILE_BASE}/`;
+  return new URL(s.replace(/^\/+/, ""), base).toString();
+}
 
 function escapeAttr(s) {
   return String(s).replace(/"/g, '\\"');
@@ -529,7 +539,8 @@ async function handlePlayerAPI(request) {
       pendingMovieResolves.set(resolveKey, promise);
       fileUrl = await promise;
     }
-
+    
+    fileUrl = normalizeFileUrl(fileUrl);
     const ext = fileUrl?.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase() || "mp4";
 
     return new Response(JSON.stringify({
@@ -730,8 +741,11 @@ async function handleMovie(pathname, u) {
 
   if (!fileUrl) return new Response("no video file found", { status: 404 });
 
-  log("[REDIRECT] movie →", fileUrl);
-  return Response.redirect(fileUrl, 302);
+  const resolved = normalizeFileUrl(fileUrl);
+  if (!resolved) return new Response("no video file found", { status: 404 });
+  
+  log("[REDIRECT] movie →", resolved);
+  return Response.redirect(resolved, 302);
 }
 
 async function handleSeries(pathname, u) {
@@ -878,6 +892,5 @@ export default {
     }
   },
 };
-
 
 
